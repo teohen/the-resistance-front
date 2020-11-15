@@ -14,16 +14,10 @@ const NewGame: React.FC<AppProps> = () => {
     setNumPlayers(nPlayers)
   }
 
-  const createGame = async (nPlayer: number) => {
-    await GameService.create(numPlayers)
-  }
-
-
-  const handleClick = (event: React.FormEvent<HTMLInputElement>) => {
+  const handleClick = async (event: React.FormEvent<HTMLInputElement>) => {
     event.preventDefault();
     setLoading(true)
-    const game = createGame(numPlayers)
-    console.log(game, 'game')
+    const game = await GameService.create(numPlayers)
     setLoading(false)
   }
 
