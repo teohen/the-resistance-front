@@ -1,9 +1,11 @@
-import { create } from 'domain'
 import { AppProps } from 'next/app'
-import React, { useEffect, useState } from 'react'
-import {GameService} from '../../services/game.service'
+import { useRouter } from 'next/router'
+import React, { useState } from 'react'
+import Loading from '../../components/loading.component'
+import { GameService } from '../../services/game.service'
 
 const NewGame: React.FC<AppProps> = () => {
+  const router = useRouter()
 
   const [numPlayers, setNumPlayers] = useState(0)
 
@@ -15,27 +17,42 @@ const NewGame: React.FC<AppProps> = () => {
   }
 
   const handleClick = async (event: React.FormEvent<HTMLInputElement>) => {
-    event.preventDefault();
+    event.preventDefault()
     setLoading(true)
     const game = await GameService.create(numPlayers)
     setLoading(false)
+    router.push('game', {
+      pathname: 'game/',
+      query: {
+        id: game.id
+      }
+    })
   }
 
-  return (
-    !loading ?
-    <div>
-    <h1>New Game</h1>
+  const renderNewGame = () => {
+    return (
+      <div>
+        <h1>New Game</h1>
         <label>
           Number of players:
-          <input type="number" pattern="[0-9]*" name="numPlayers" value={numPlayers} onChange={handleChange}/>
+          <input
+            type="number"
+            pattern="[0-9]*"
+            name="numPlayers"
+            value={numPlayers}
+            onChange={handleChange}
+          />
         </label>
         <input type="submit" value="Create" onClick={handleClick} />
-    </div>
-    :
-    <>
-    <h1>carregando...</h1>
-    </>
-  )
+      </div>
+    )
+  }
+
+  const renderLoading = () => {
+    return <Loading />
+  }
+
+  return !loading ? renderNewGame() : renderLoading()
 }
 
 export default NewGame
